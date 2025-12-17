@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">belajar fragment1</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_explore">Explore</string>
+    <string name="subtitle_explore">Search your dream jobs here</string>
+</resources>
