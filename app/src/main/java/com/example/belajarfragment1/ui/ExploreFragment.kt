@@ -1,6 +1,7 @@
 package com.example.belajarfragment1.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -8,11 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.belajarfragment1.DetailJobActivity
 import com.example.belajarfragment1.R
 import com.example.belajarfragment1.adapter.JobAdapter
+import com.example.belajarfragment1.api.ApiHelper
 import com.example.belajarfragment1.data.JobData
+import org.json.JSONObject
 
 
 class ExploreFragment : Fragment() {
@@ -35,7 +40,7 @@ class ExploreFragment : Fragment() {
 
     private fun filter(category: String){
         val result = when(category){
-            "onsite" -> alljobs.filter { it.category == "onsite" }
+            "onsite" -> alljobs.filter { it.category == "onSite" }
             "remote" -> alljobs.filter { it.category == "remote" }
             else -> alljobs
         }
@@ -43,6 +48,24 @@ class ExploreFragment : Fragment() {
         jobAdapter.UpdateData(result)
     }
 
+    private fun parseJobs(jsonString: String){
+        val json = JSONObject(jsonString)
+        val data = json.getJSONArray("data")
+
+        for (i in 0 until data.length()) {
+            val job = data.getJSONObject(i)
+            alljobs.add(
+                JobData(
+                category = job.getString("category"),
+                job = job.getString("job_name"),
+                namePT = job.getString("company_name"),
+                location = job.getString("location"),
+                experience = job.getString("required")
+            ))
+            jobAdapter.UpdateData(alljobs)
+            Log.d("JOB", job.getString("job_name"))
+        }
+    }
 
 
     @SuppressLint("CutPasteId")
@@ -60,10 +83,24 @@ class ExploreFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
 
 
-        jobAdapter = JobAdapter(jobList)
+        jobAdapter = JobAdapter(jobList){job ->
+            Toast.makeText(requireContext(), job.job, Toast.LENGTH_SHORT).show()
+
+            // pindah ke detail
+            val intent = Intent(requireContext(), DetailJobActivity::class.java)
+            intent.putExtra("JOB_ID", job.job)
+            startActivity(intent)
+        }
         recyclerView.adapter = jobAdapter
 
-        loadDummyData()
+        ApiHelper.get("jobs",null){success,response ->
+            if (!success || response == null) return@get
+
+            requireActivity().runOnUiThread {
+                parseJobs(response)
+            }
+        }
+
 
         return view
     }
@@ -108,52 +145,6 @@ class ExploreFragment : Fragment() {
         selectTab(tabAll)
     }
 
-
-    @SuppressLint("NotifyDataSetChanged")
-    private fun loadDummyData() {
-        alljobs.add(
-            JobData(
-                category = "onsite",
-                job = "Android Developer",
-                namePT = "PT Maju Mundur",
-                location = "On site (Jakarta)",
-                experience = "Min 1 Tahun"
-            )
-        )
-
-        alljobs.add(
-            JobData(
-                category = "remote",
-                job = "UI/UX Designer",
-                namePT = "PT Kreatif",
-                location = "Remote (Bandung)",
-                experience = "Fresh Graduate"
-            )
-        )
-
-        alljobs.add(
-            JobData(
-                category = "remote",
-                job = "UI/UX Designer",
-                namePT = "PT Kreatif",
-                location = "Remote (Bandung)",
-                experience = "Fresh Graduate"
-            )
-        )
-
-        alljobs.add(
-            JobData(
-                category = "remote",
-                job = "UI/UX Designer",
-                namePT = "PT Kreatif",
-                location = "Remote (Bandung)",
-                experience = "Fresh Graduate"
-            )
-        )
-
-        jobAdapter.UpdateData(alljobs)
-
-    }
 
     companion object {
         @JvmStatic

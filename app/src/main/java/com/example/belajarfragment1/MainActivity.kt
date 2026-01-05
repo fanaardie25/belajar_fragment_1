@@ -1,5 +1,6 @@
 package com.example.belajarfragment1
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,14 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
 
+        val pref = getSharedPreferences("auth",MODE_PRIVATE)
+        val token = pref.getString("token","not-found")
+
+        if (token == "not-found"){
+            val intentDestination = Intent(this, LoginActivity::class.java)
+            startActivity(intentDestination)
+            finish()
+        }
 
         if (savedInstanceState == null) {
             addFragment(ExploreFragment())

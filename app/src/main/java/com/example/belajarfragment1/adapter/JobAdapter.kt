@@ -11,7 +11,7 @@ import com.example.belajarfragment1.data.JobData
 import org.w3c.dom.Text
 import java.util.zip.Inflater
 
-class JobAdapter(private var dataList: MutableList<JobData>): RecyclerView.Adapter<JobAdapter.JobViewHolder>() {
+class JobAdapter(private var dataList: MutableList<JobData>,private val onItemClick: (JobData) -> Unit): RecyclerView.Adapter<JobAdapter.JobViewHolder>() {
 
     class JobViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val rvJobName: TextView = itemView.findViewById<TextView>(R.id.job_name)
@@ -36,6 +36,10 @@ class JobAdapter(private var dataList: MutableList<JobData>): RecyclerView.Adapt
         holder.rvPtName.text = currentItem.namePT
         holder.rvJobLocation.text = currentItem.location
         holder.rvJobExperience.text = currentItem.experience
+
+        holder.itemView.setOnClickListener {
+            onItemClick(currentItem)
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

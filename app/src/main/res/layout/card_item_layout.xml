@@ -13,7 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:padding="15dp"
+        android:foreground="?attr/selectableItemBackground"
+        >
 
         <TextView
             android:id="@+id/job_name"
